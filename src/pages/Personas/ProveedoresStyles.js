@@ -175,3 +175,38 @@ export const SearchResultItem = styled.li`
     background-color: #e9e9e9;
   }
 `;
+
+export const ModalButton = styled.button`
+    background-color: blue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+
+    &:hover {
+        background-color: darkblue;
+    }
+`;
+
+export const ModalContainer = styled.div`
+    width: 80%;
+     max-width: 650px;
+     background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin: auto;
+    color: #333;
+`;
+
+export const ModalContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+`;

@@ -56,6 +56,7 @@ const Productos = () => {
 
   const handleResultClick = (client) => {
     setFormData({
+      id: client.id,
       nombre: client.nombre,
       condicion_iva: client.condicion_iva,
       cuit: client.cuit,

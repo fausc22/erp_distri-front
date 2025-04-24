@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 import toast, { Toaster } from 'react-hot-toast';
 import Navbar from '../../components/Navbar/Navbar';
+import useAuth from '../../components/useAuth';
 
 const Home = () => {
   const navigate = useNavigate();
   
-
+  useAuth(); // Bloquea si no hay token
   
 
   return (

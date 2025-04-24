@@ -13,61 +13,105 @@ import {
   Input, 
   TitleRightContainer,
   SearchResultList,
-  SearchResultItem
+  SearchResultItem,
+  ModalContainer,
+  ModalContent,
+  ModalButton
 } from './ProveedoresStyles';
-import imgLogin from '../../assets/img/login-img/bg-blue.jpg';
-import Toaster from 'react-bootstrap/Toast';
+
+import toast, { Toaster } from 'react-hot-toast';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-modal';
 
 const Productos = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '',
-    categoria: '',
-    precio_costo: '',
-    precio_venta: '',
-    cantidad: ''
-  });
+    condicion_iva: '',
+    cuit: '',
+    dni: '',
+    direccion: '',
+    ciudad: '',
+    provincia: '',
+    telefono: '',
+    email: ''
+  })
 
   const handleSearch = async () => {
     if (searchQuery.length >= 3) {
       try {
-        const response = await axios.get(`http://localhost:3001/productos?query=${searchQuery}`);
-        setSearchResults(response.data);
+        const response = await axios.get(`http://localhost:3001/personas/buscar-proveedor?search=${searchQuery}`);
+        setSearchResults(response.data.data);
+        setModalIsOpen(true);
       } catch (error) {
-        console.error('Error al buscar productos:', error);
+        console.error('Error al buscar cliente:', error);
       }
     }
   };
 
-  const handleSearchInputChange = (event) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-    if (value.length >= 3) {
-      handleSearch();
-    } else {
-      setSearchResults([]);
-    }
+  const handleResultClick = (client) => {
+    setFormData({
+      nombre: client.nombre,
+      condicion_iva: client.condicion_iva,
+      cuit: client.cuit,
+      dni: client.dni,
+      direccion: client.direccion,
+      ciudad: client.ciudad,
+      provincia: client.provincia,
+      telefono: client.telefono,
+      email: client.email
+    });
+
+    setSearchQuery('');
+    setModalIsOpen(false);
   };
 
-  const handleResultClick = (product) => {
-    setFormData({
-      nombre: product.nombre,
-      categoria: product.categoria,
-      precio_costo: product.precio_costo,
-      precio_venta: product.precio_venta,
-      cantidad: product.cantidad
-    });
-    setSearchResults([]);
-  };
+  
+
+  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+  
+    // Solo permitir números en CUIT, DNI y Teléfono
+    if (["cuit", "dni", "telefono"].includes(name) && !/^\d*$/.test(value)) {
+      return;
+    }
+  
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+
+  const handleSaveProduct = async () => {
+    try {
+      if (formData.id) {
+        await axios.put(`http://localhost:3001/personas/actualizar-proveedor/${formData.id}`, formData);
+        toast.success('Proveedor actualizado correctamente');
+      } else {
+        await axios.post('http://localhost:3001/personas/crear-proveedor', formData);
+        toast.success('Proveedor creado correctamente');
+      }
+    } catch (error) {
+      toast.error('Error al guardar proveedor');
+      console.error(error);
+    } finally {
+      setFormData({
+        nombre: '',
+        condicion_iva: '',
+        cuit: '',
+        dni: '',
+        direccion: '',
+        ciudad: '',
+        provincia: '',
+        telefono: '',
+        email: ''
+      });
+    }
   };
 
   const renderForm = () => {
@@ -76,7 +120,7 @@ const Productos = () => {
         return (
           <>
             <TitleRightContainer>
-              <h2 >NUEVO PRODUCTO</h2>
+              <h2 >NUEVO PROVEEDOR</h2>
               <p>INSERTE LOS SIGUIENTES DATOS</p>
             </TitleRightContainer>
             <InputGroup className="mb-3">
@@ -89,85 +133,123 @@ const Productos = () => {
                 aria-describedby="inputGroup-sizing-default"
               />
             </InputGroup>
-            <Form.Select
-              name="categoria"
-              value={formData.categoria}
-              onChange={handleInputChange}
-              aria-label="Default select example"
-            >
-              <option value="">SELECCIONE UNA CATEGORIA</option>
-              <option value="ALIMENTOS">ALIMENTOS</option>
-              <option value="LIMPIEZA">LIMPIEZA</option>
-              <option value="LIQUIDOS">LIQUIDOS</option>
-            </Form.Select>
-            <br />
             <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default">UNIDAD MEDIDA</InputGroup.Text>
+            <InputGroup.Text id="inputGroup-sizing-default">CONDICION IVA</InputGroup.Text>
+              <Form.Select
+                name="condicion_iva"
+                value={formData.condicion_iva}
+                onChange={handleInputChange}
+                aria-label="Default select example"
+              >
+                <option value="">SELECCIONE UNA CATEGORIA</option>
+                <option value="Responsable Inscripto">Responsable Inscripto</option>
+                <option value="Monotributo">Monotributo</option>
+                <option value="Consumidor Final">Consumidor Final</option>
+              </Form.Select>
+            </InputGroup>
+            
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default">CUIT</InputGroup.Text>
               <Form.Control
-                name="cantidad"
-                value={formData.cantidad}
+                name="cuit"
+                value={formData.cuit}
+                onChange={handleInputChange}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+              />
+            </InputGroup>
+            
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default">DNI</InputGroup.Text>
+              <Form.Control
+                name="dni"
+                value={formData.dni}
                 onChange={handleInputChange}
                 aria-label="Default"
                 aria-describedby="inputGroup-sizing-default"
               />
             </InputGroup>
             <InputGroup className="mb-3">
-              <InputGroup.Text>PRECIO COSTO</InputGroup.Text>
-              <InputGroup.Text>$</InputGroup.Text>
+              <InputGroup.Text>DIRECCION</InputGroup.Text>
+              
               <Form.Control
-                name="precio_costo"
-                value={formData.precio_costo}
-                onChange={handleInputChange}
-                aria-label="Dollar amount (with dot and two decimal places)"
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text>PRECIO VENTA</InputGroup.Text>
-              <InputGroup.Text>$</InputGroup.Text>
-              <Form.Control
-                name="precio_venta"
-                value={formData.precio_venta}
-                onChange={handleInputChange}
-                aria-label="Dollar amount (with dot and two decimal places)"
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text>IVA</InputGroup.Text>
-              <InputGroup.Text>%</InputGroup.Text>
-              <Form.Control
-                name="precio_costo"
-                value={formData.precio_costo}
-                onChange={handleInputChange}
-                aria-label="Dollar amount (with dot and two decimal places)"
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default">STOCK</InputGroup.Text>
-              <Form.Control
-                name="cantidad"
-                value={formData.cantidad}
-                onChange={handleInputChange}
+                name="direccion"
+                value={formData.direccion}
                 aria-label="Default"
                 aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
               />
             </InputGroup>
-            <Button variant="success" onClick={() => handleCreateOrUpdateProduct('create')}>CREAR PRODUCTO</Button>{' '}
-            <Button variant="danger" onClick={() => setFormData({ nombre: '', categoria: '', precio_costo: '', precio_venta: '', cantidad: '' })}>LIMPIAR DATOS</Button>{' '}
+            <InputGroup className="mb-3">
+              <InputGroup.Text>CIUDAD</InputGroup.Text>
+              
+              <Form.Control
+                name="ciudad"
+                value={formData.ciudad}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>PROVINCIA</InputGroup.Text>
+              
+              <Form.Control
+                name="provincia"
+                value={formData.provincia}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>TELEFONO</InputGroup.Text>
+              
+              <Form.Control
+                name="telefono"
+                value={formData.telefono}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>EMAIL</InputGroup.Text>
+              <InputGroup.Text>@</InputGroup.Text>
+              <Form.Control
+                name="email"
+                value={formData.email}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <Button variant="success" style={{marginBottom: '10px'}} onClick={() => handleSaveProduct()}>CREAR PROVEEDOR</Button>{' '}
+            <Button variant="danger" onClick={() => setFormData({ nombre: '',
+                condicion_iva: '',
+                cuit: '',
+                dni: '',
+                direccion: '',
+                ciudad: '',
+                provincia: '',
+                telefono: '',
+                email: ''})}>LIMPIAR DATOS
+            </Button>{' '}
           </>
         );
       case 'edit':
         return (
           <>
             <TitleRightContainer>
-              <h2>EDITAR PRODUCTO</h2>
-              <p>MODIFIQUE LOS DATOS DEL PRODUCTO</p>
+              <h2>EDITAR PROVEEDOR</h2>
+              <p>MODIFIQUE LOS DATOS DEL PROVEEDOR</p>
             </TitleRightContainer>
 
             <InputGroup className="mb-3">
               <Form.Control
-                placeholder="BUSCAR POR NOMBRE O CATEGORIA"
+                placeholder="BUSCAR POR NOMBRE"
                 value={searchQuery}
-                onChange={handleSearchInputChange}
+                onChange={(event) => setSearchQuery(event.target.value)} 
                 aria-label="Recipient's username"
                 aria-describedby="basic-addon2"
               />
@@ -176,15 +258,7 @@ const Productos = () => {
               </Button>
             </InputGroup>
 
-            {searchResults.length > 0 && (
-              <SearchResultList>
-                {searchResults.map((product) => (
-                  <SearchResultItem key={product.ID} onClick={() => handleResultClick(product)}>
-                    {product.nombre} - {product.categoria}
-                  </SearchResultItem>
-                ))}
-              </SearchResultList>
-            )}
+            
 
             <InputGroup className="mb-3">
               <InputGroup.Text id="inputGroup-sizing-default">NOMBRE</InputGroup.Text>
@@ -196,74 +270,114 @@ const Productos = () => {
                 aria-describedby="inputGroup-sizing-default"
               />
             </InputGroup>
-            <Form.Select
-              name="categoria"
-              value={formData.categoria}
-              onChange={handleInputChange}
-              aria-label="Default select example"
-            >
-              <option value="">SELECCIONE UNA CATEGORIA</option>
-              <option value="ALIMENTOS">ALIMENTOS</option>
-              <option value="LIMPIEZA">LIMPIEZA</option>
-              <option value="LIQUIDOS">LIQUIDOS</option>
-            </Form.Select>
-            <br />
             <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default">UNIDAD MEDIDA</InputGroup.Text>
+            <InputGroup.Text id="inputGroup-sizing-default">CONDICION IVA</InputGroup.Text>
+              <Form.Select
+                name="condicion_iva"
+                value={formData.condicion_iva}
+                onChange={handleInputChange}
+                aria-label="Default select example"
+              >
+                <option value="">SELECCIONE UNA CATEGORIA</option>
+                <option value="Responsable Inscripto">Responsable Inscripto</option>
+                <option value="Monotributo">Monotributo</option>
+                <option value="Consumidor Final">Consumidor Final</option>
+              </Form.Select>
+            </InputGroup>
+            
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default">CUIT</InputGroup.Text>
               <Form.Control
-                name="cantidad"
-                value={formData.cantidad}
+                name="cuit"
+                value={formData.cuit}
+                onChange={handleInputChange}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+              />
+            </InputGroup>
+            
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default">DNI</InputGroup.Text>
+              <Form.Control
+                name="dni"
+                value={formData.dni}
                 onChange={handleInputChange}
                 aria-label="Default"
                 aria-describedby="inputGroup-sizing-default"
               />
             </InputGroup>
             <InputGroup className="mb-3">
-              <InputGroup.Text>PRECIO COSTO</InputGroup.Text>
-              <InputGroup.Text>$</InputGroup.Text>
+              <InputGroup.Text>DIRECCION</InputGroup.Text>
+              
               <Form.Control
-                name="precio_costo"
-                value={formData.precio_costo}
-                onChange={handleInputChange}
-                aria-label="Dollar amount (with dot and two decimal places)"
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text>PRECIO VENTA</InputGroup.Text>
-              <InputGroup.Text>$</InputGroup.Text>
-              <Form.Control
-                name="precio_venta"
-                value={formData.precio_venta}
-                onChange={handleInputChange}
-                aria-label="Dollar amount (with dot and two decimal places)"
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text>IVA</InputGroup.Text>
-              <InputGroup.Text>%</InputGroup.Text>
-              <Form.Control
-                name="precio_costo"
-                value={formData.precio_costo}
-                onChange={handleInputChange}
-                aria-label="Dollar amount (with dot and two decimal places)"
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="inputGroup-sizing-default">STOCK</InputGroup.Text>
-              <Form.Control
-                name="cantidad"
-                value={formData.cantidad}
-                onChange={handleInputChange}
+                name="direccion"
+                value={formData.direccion}
                 aria-label="Default"
                 aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
               />
             </InputGroup>
-            <Button variant="success" onClick={() => handleCreateOrUpdateProduct('update')}>ACTUALIZAR PRODUCTO</Button>{' '}
-            <Button variant="danger" onClick={() => setFormData({ nombre: '', categoria: '', precio_costo: '', precio_venta: '', cantidad: '' })}>LIMPIAR DATOS</Button>{' '}
+            <InputGroup className="mb-3">
+              <InputGroup.Text>CIUDAD</InputGroup.Text>
+              
+              <Form.Control
+                name="ciudad"
+                value={formData.ciudad}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>PROVINCIA</InputGroup.Text>
+              
+              <Form.Control
+                name="provincia"
+                value={formData.provincia}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>TELEFONO</InputGroup.Text>
+              
+              <Form.Control
+                name="telefono"
+                value={formData.telefono}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>EMAIL</InputGroup.Text>
+              <InputGroup.Text>@</InputGroup.Text>
+              <Form.Control
+                name="email"
+                value={formData.email}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                onChange={handleInputChange}
+              />
+            </InputGroup>
+            <Button variant="success" style={{marginBottom: '10px'}} onClick={handleSaveProduct}>ACTUALIZAR PROVEEDOR</Button>{' '}
+            <Button variant="danger" onClick={() => setFormData({ nombre: '',
+                condicion_iva: '',
+                cuit: '',
+                dni: '',
+                direccion: '',
+                ciudad: '',
+                provincia: '',
+                telefono: '',
+                email: ''})}>LIMPIAR DATOS
+            </Button>{' '}
           </>
         );
       default:
         return null;
+
+        
     }
   };
 
@@ -271,17 +385,29 @@ const Productos = () => {
     <LoginContainerStyled>
       <LoginWrapper>
         <LeftContainer>
-          <Title style={{color:'lightblue'}}>PRODUCTOS</Title>
+          <Title style={{color:'lightblue'}}>PROVEEDORES</Title>
           <Subtitle style={{color:'white'}}>SELECCIONE UNA OPCIÓN</Subtitle>
-          <Button variant="success" rounded onClick={() => setSelectedOption('new')}>NUEVO PRODUCTO</Button>{' '}
-          <Button variant="warning" rounded onClick={() => setSelectedOption('edit')} >EDITAR PRODUCTO</Button>{' '}
+          <Button variant="success" rounded onClick={() => setSelectedOption('new')}>NUEVO PROVEEDOR</Button>{' '}
+          <Button variant="warning" rounded onClick={() => setSelectedOption('edit')} >EDITAR PROVEEDOR</Button>{' '}
           
         </LeftContainer>
         <RightContainer show={!!selectedOption}>
           {renderForm()}
         </RightContainer>
       </LoginWrapper>
-      <Toaster />
+      <Toaster position="top-right" />
+
+      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
+        <ModalContainer>
+          <h3>Seleccionar Producto</h3>
+          {searchResults.map((product, index) => (
+            <div key={index} onDoubleClick={() => handleResultClick(product)}>
+              {product.nombre}
+            </div>
+          ))}
+          <ModalButton onClick={() => setModalIsOpen(false)}>Cerrar</ModalButton>
+        </ModalContainer>
+      </Modal>
     </LoginContainerStyled>
   );
 };

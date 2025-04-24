@@ -9,12 +9,27 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Aquí puedes realizar la lógica de autenticación si es necesario
-    // Por ejemplo, validar credenciales
-
-    // Después de la autenticación exitosa, navegar a la ruta "/inicio"
-    navigate('/inicio');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('token', data.token); // Guardar token
+        localStorage.setItem('role', data.role); // Guardar el rol del usuario
+        toast.success('Inicio de sesión exitoso');
+        navigate('/inicio'); // Redirigir al dashboard
+      } else {
+        toast.error(data.message || 'Error al iniciar sesión');
+      }
+    } catch (error) {
+      toast.error('Error en el servidor');
+    }
   };
 
   return (

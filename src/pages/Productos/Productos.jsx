@@ -134,13 +134,19 @@ const Productos = () => {
             <br />
             <InputGroup className="mb-3">
               <InputGroup.Text id="inputGroup-sizing-default">UNIDAD MEDIDA</InputGroup.Text>
-              <Form.Control
+              <Form.Select
                 name="unidad_medida"
                 value={formData.unidad_medida}
                 onChange={handleInputChange}
-                aria-label="Default"
-                aria-describedby="inputGroup-sizing-default"
-              />
+                              
+                aria-label="Default select example"
+              >
+                  <option value=""></option>
+                  <option value="UNIDADES">UNIDADES</option>
+                  <option value="LITROS">LITROS</option>
+                              
+              </Form.Select>
+              
             </InputGroup>
             <InputGroup className="mb-3">
               <InputGroup.Text>PRECIO COSTO</InputGroup.Text>
@@ -239,13 +245,18 @@ const Productos = () => {
             <br />
             <InputGroup className="mb-3">
               <InputGroup.Text id="inputGroup-sizing-default">UNIDAD MEDIDA</InputGroup.Text>
-              <Form.Control
+              <Form.Select
                 name="unidad_medida"
                 value={formData.unidad_medida}
                 onChange={handleInputChange}
-                aria-label="Default"
-                aria-describedby="inputGroup-sizing-default"
-              />
+                              
+                aria-label="Default select example"
+              >
+                  <option value=""></option>
+                  <option value="UNIDADES">UNIDADES</option>
+                  <option value="LITROS">LITROS</option>
+                              
+              </Form.Select>
             </InputGroup>
             <InputGroup className="mb-3">
               <InputGroup.Text>PRECIO COSTO</InputGroup.Text>
@@ -280,11 +291,13 @@ const Productos = () => {
             <InputGroup className="mb-3">
               <InputGroup.Text id="inputGroup-sizing-default">STOCK</InputGroup.Text>
               <Form.Control
-                name="stock"
+                type="number"
+                name="stock_actual"
                 value={formData.stock_actual}
                 onChange={handleInputChange}
                 aria-label="Default"
                 aria-describedby="inputGroup-sizing-default"
+                min="0"
               />
             </InputGroup>
             <Button variant="success" onClick={handleSaveProduct}>ACTUALIZAR PRODUCTO</Button>{' '}
