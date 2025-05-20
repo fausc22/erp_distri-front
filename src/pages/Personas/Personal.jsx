@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -20,6 +20,7 @@ import Toaster from 'react-bootstrap/Toast';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import useAuth from '../../components/useAuth';
 
 const Productos = () => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -31,6 +32,11 @@ const Productos = () => {
     precio_costo: '',
     precio_venta: '',
     cantidad: ''
+  });
+  useAuth();
+
+  useEffect(() => {
+    document.title = 'VERTIMAR | Personal';
   });
 
   const handleSearch = async () => {

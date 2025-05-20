@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -8,7 +8,9 @@ import useAuth from '../../components/useAuth';
 
 const Home = () => {
   const navigate = useNavigate();
-  
+  useEffect(() => {
+    document.title = 'VERTIMAR | INICIO';
+  });
   useAuth(); // Bloquea si no hay token
   
 

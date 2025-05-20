@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -24,6 +24,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-modal';
+import useAuth from '../../components/useAuth';
 
 const Productos = () => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -39,6 +40,11 @@ const Productos = () => {
     iva: '',
     stock_actual: ''
   })
+  useAuth();
+
+  useEffect(() => {
+    document.title = 'VERTIMAR | Productos'
+  });
 
   const handleSearch = async () => {
     if (searchQuery.length >= 3) {

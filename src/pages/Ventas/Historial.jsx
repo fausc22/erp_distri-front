@@ -11,6 +11,7 @@ import {
     LoginContainerStyled, LoginWrapper, RightContainer,
     TableContainer, ConfirmButton, DeletedButton, ModalContainer, ModalContent, ModalButton, FormGroup, StyledButton, ClientInfo, Input,
 } from './HistorialStyles';
+import useAuth from '../../components/useAuth';
 
 const Historial = () => {
     const navigate = useNavigate();
@@ -26,9 +27,10 @@ const Historial = () => {
     const [productQuantity, setProductQuantity] = useState(1);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);  // Nuevo modal de confirmación
     const [productToDelete, setProductToDelete] = useState(null);  // Producto a eliminar
-
+    useAuth();
     // Obtener datos de ventas al montar el componente
     useEffect(() => {
+        document.title = "VERTIMAR | Historial de Ventas";
         axios.get('http://localhost:3001/ventas/obtener-ventas')
             .then((response) => {
                 setVentas(response.data); // Guardar ventas en el estado

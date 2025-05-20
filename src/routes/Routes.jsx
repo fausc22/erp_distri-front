@@ -14,6 +14,9 @@ import Clientes from '../pages/Personas/Clientes.jsx';
 import Empleados from '../pages/Personas/Personal.jsx';
 import Proveedores from '../pages/Personas/Proveedores.jsx';
 import HistorialRemito from '../pages/Productos/HistorialRemito.jsx';
+// import CompraProveedores from '../pages/Compras/CompraProveedores.jsx';
+// import HistorialGastos from '../pages/Compras/HistorialGastos.jsx';
+// import Gastos from '../pages/Compras/Gastos.jsx';
 
 
 const Routes = ({}) => {
@@ -30,6 +33,12 @@ const Routes = ({}) => {
       <Route path="/registrar-venta" element={<Layout> <RegistrarVenta/> </Layout>  }/>
       <Route path="/lista-precios" element={<Layout> <ListaPrecios/> </Layout>  }/>
       <Route path="/historial-ventas" element={<Layout> <HistorialVentas/> </Layout>  }/>
+
+
+      //RUTAS COMPRAS 
+      {/* <Route path="/compra-proveedores" element={<Layout> <CompraProveedores/> </Layout>  }/>
+      <Route path="/historial-gastos" element={<Layout> <HistorialGastos/> </Layout>  }/>
+      <Route path="/gastos" element={<Layout> <Gastos/> </Layout>  }/> */}
 
       //RUTAS INVENTARIO
       <Route path="/productos" element={<Layout> <Productos/> </Layout>  }/>

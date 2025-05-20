@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { MdSearch, MdDeleteForever } from "react-icons/md";
+import useAuth from '../../components/useAuth';
 
 
 import {
@@ -18,7 +19,8 @@ import { FaDeleteLeft } from 'react-icons/fa6';
 
 const RegistrarVenta = () => {
     const navigate = useNavigate();
-
+    
+    useAuth(); // Bloquea si no hay token
     const [form, setForm] = useState({
         vendedor: '',
         cliente: '',
@@ -46,6 +48,7 @@ const RegistrarVenta = () => {
     
 
     useEffect(() => {
+        document.title = 'VERTIMAR | LISTA DE PRECIOS';
         const fetchVendedores = async () => {
             try {
                 const response = await axios.get('http://localhost:3001/ventas/obtener-vendedor');

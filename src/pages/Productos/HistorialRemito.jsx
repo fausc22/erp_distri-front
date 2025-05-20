@@ -5,6 +5,7 @@ import { Column } from 'primereact/column';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import Modal from 'react-modal';
+import useAuth from '../../components/useAuth';
 
 import {
   LoginContainerStyled, LoginWrapper, RightContainer,
@@ -17,8 +18,9 @@ const Historial = () => {
   const [selectedRemito, setSelectedRemito] = useState(null); // Estado para almacenar el remito seleccionado en la tabla
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [remitoProductos, setRemitoProductos] = useState([]); // Estado para almacenar los productos del pedido
-
+  useAuth();
   useEffect(() => {
+    document.title = 'VERTIMAR | Remitos'
     axios
       .get("http://localhost:3001/productos/obtener-remitos")
       .then((response) => {

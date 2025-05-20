@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { LoginContainerStyled, LoginWrapper, StyledButton, Title } from './ListaPreciosStyles'; // Modificamos las importaciones
 import toast, { Toaster } from 'react-hot-toast';
 import Table from 'react-bootstrap/Table';
+import useAuth from '../../components/useAuth'
 
 const ListaPrecios = () => {
-  
+  useEffect(() => {
+    document.title = 'VERTIMAR | LISTA DE PRECIOS';
+  });
+  useAuth(); // Bloquea si no hay token
 
   return (
     <LoginContainerStyled>

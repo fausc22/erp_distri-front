@@ -50,10 +50,10 @@ function BlueNavbar() {
             {/* COMPRAS - Visible solo para GERENTE */}
             {role === "GERENTE" && (
               <NavDropdown title="COMPRAS" id="basic-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">Registrar Compra</NavDropdown.Item>
-                <NavDropdown.Item href="#action/3.1">Registrar Gasto</NavDropdown.Item>
+                <NavDropdown.Item href="/compra-proveedores">Registrar Compra</NavDropdown.Item>
+                <NavDropdown.Item href="/gastos">Registrar Gasto</NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">Historial de Compras</NavDropdown.Item>
+                <NavDropdown.Item href="/historial-gastos">Historial de Compras</NavDropdown.Item>
               </NavDropdown>
             )}
 

@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { MdSearch, MdDeleteForever } from "react-icons/md";
-
+import useAuth from '../../components/useAuth';
 
 import {
     LoginContainerStyled, LoginWrapper, LeftContainer, RightContainer,
@@ -17,7 +17,7 @@ import { FaDeleteLeft } from 'react-icons/fa6';
 
 const RegistrarVenta = () => {
     const navigate = useNavigate();
-
+    useAuth();
     const [form, setForm] = useState({
         vendedor: '',
         cliente: '',
@@ -41,7 +41,9 @@ const RegistrarVenta = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [productQuantity, setProductQuantity] = useState(1);
     const [confirmDeleteClientModal, setConfirmDeleteClientModal] = useState(false);
-
+    useEffect(() => {
+        document.title = 'VERTIMAR | Registrar Venta';
+    });
     
 
     
